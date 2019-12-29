@@ -6,6 +6,17 @@ if (typeof(EEVTest) == 'undefined') {
 const EEVBlog121GW = App.EEVBlog121GW;
 const EEVBlog121GWParser = App.EEVBlog121GWParser;
 
+const STALE_CLASS = 'stale';
+const STATE_ELEMENT_SELECTOR = '[data-element-type="display_state"]'
+const VALUE_ELEMENT_SELECTOR = '[data-element-type="display_value"]'
+
+const ConnectionState = {
+  disconnected: 'Not Connected',
+  connecting: 'Connecting',
+  connected: 'Connected',
+  disconnecting: 'Disconnecting'
+};
+
 EEVTest.bluetoothDevice = null;
 EEVTest.gattServer = null;
 EEVTest.measurementCharacteristic = null;
@@ -36,12 +47,15 @@ EEVTest.requestDevice = function() {
 
 EEVTest.connectDeviceAndCacheCharacteristics = function() {
   if (EEVTest.bluetoothDevice.gatt.connected) {
+    EEVTest.updateUIForConnectionState(ConnectionState.connected);
     return Promise.resolve();
   }
 
   log('Connecting to GATT Server...');
+  EEVTest.updateUIForConnectionState(ConnectionState.connecting);
   return EEVTest.bluetoothDevice.gatt.connect()
   .then(server => {
+    EEVTest.updateUIForConnectionState(ConnectionState.connected);
     EEVTest.gattServer = server;
     log('Getting Measurement Service...');
     return EEVTest.gattServer.getPrimaryService('0bd51666-e7cb-469b-8e4d-2742f1ba77cc');
@@ -63,6 +77,8 @@ EEVTest.connectDeviceAndCacheCharacteristics = function() {
  * characteristic value changes since `characteristicvaluechanged` event
  * listener has been added. */
 EEVTest.handleMeasurementChanged = function(event) {
+  EEVTest.setValueElementsStale(false);
+  EEVTest.setStateElementsStale(false);
   let data = event.target.value;
   let parsingState = EEVTest.meter.processMessageData(data);
   if (parsingState === EEVBlog121GWParser.ParsingState.completed) {
@@ -81,6 +97,9 @@ EEVTest.handleMeasurementChanged = function(event) {
 EEVTest.onDisconnected = function(event) {
   let device = event.target;
   log('Device ' + device.name + ' is disconnected.');
+  EEVTest.updateUIForConnectionState(ConnectionState.disconnected);
+  EEVTest.setStateElementsStale(true);
+  EEVTest.setValueElementsStale(true);
 }
 
 EEVTest.onStartNotificationsButtonClick = function() {
@@ -114,12 +133,53 @@ EEVTest.onResetButtonClick = function() {
     return;
   }
   log('Disconnecting from Bluetooth Device...');
+  EEVTest.updateUIForConnectionState(ConnectionState.disconnecting);
   if (EEVTest.bluetoothDevice.gatt.connected) {
     EEVTest.bluetoothDevice.gatt.disconnect();
   } else {
     log('> Bluetooth Device is already disconnected');
   }
   EEVTest.bluetoothDevice = null;
+}
+
+EEVTest.updateUIForConnectionState = function(connectionState) {
+  document.getElementById('connection_state').innerHTML = connectionState;
+}
+
+EEVTest.getAllStateElements = function() {
+  var elements = document.querySelectorAll(STATE_ELEMENT_SELECTOR);
+  return [].slice.call(elements);
+}
+
+EEVTest.getAllValueElements = function() {
+  var elements = document.querySelectorAll(VALUE_ELEMENT_SELECTOR);
+  return [].slice.call(elements);
+}
+
+EEVTest.setValueElementsStale = function(stale) {
+  const elements = EEVTest.getAllValueElements();
+  if (stale) {
+    for (var element of elements) {
+      element.classList.add(STALE_CLASS);
+    }
+  } else {
+    for (var element of elements) {
+      element.classList.remove(STALE_CLASS);
+    }
+  }
+}
+
+EEVTest.setStateElementsStale = function(stale) {
+  const elements = EEVTest.getAllStateElements();
+  if (stale) {
+    for (var element of elements) {
+      element.classList.add(STALE_CLASS);
+    }
+  } else {
+    for (var element of elements) {
+      element.classList.remove(STALE_CLASS);
+    }
+  }
 }
 
 /* Utils */

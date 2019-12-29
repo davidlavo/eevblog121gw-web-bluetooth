@@ -57,46 +57,42 @@ h3 {
 }
 
 #connect_buttons_container {
-    margin-top:20px;
-    margin-bottom:20px;
+  margin-top:20px;
+  margin-bottom:20px;
 }
 
 #measurement_container {
-    margin-top:20px;
-    margin-bottom:20px;
-	margin-left:15%;
-	margin-right:15%;
-	width:70%;
-	text-align:center;
-}
-
-#measurement_value, #measurement_mode, #measurement_units, #calculated1, #calculated2, #calculated1text, #calculated2text{
-	font-size:3em;
-	color:#000000;
-	background: transparent;
-	margin-top:0px;
-	margin-bottom:0px;
-	padding-top:0px;
-	padding-bottom:0px;
-	display:inline;
+  margin-top:20px;
+  margin-bottom:20px;
+  margin-left:15%;
+  margin-right:15%;
+  width:70%;
+  text-align:center;
 }
 
 #measurement_value, #measurement_mode, #measurement_units {
-    
+  color:#000000;
+  background: transparent;
+  margin-top:0px;
+  margin-bottom:0px;
+  padding-top:0px;
+  padding-bottom:0px;
+  display:inline;
 }
 
 #measurement_value {
-    font-weight:bolder;
+  font-size:3em;
+  font-weight:bolder;
 }
 
 #measurement_mode, #measurement_units {
-	font-size:1.7em;
-	font-weight:lighter;
+  font-size:1.7em;
+  font-weight:lighter;
 }
 
 #data_table_container {
-    margin-top:20px;
-    margin-bottom:20px;
+  margin-top:20px;
+  margin-bottom:20px;
 }
 
 .highlight {
@@ -106,6 +102,10 @@ h3 {
   margin: 0.5em;
   overflow-x: auto;
   padding: 0.5em;
+}
+
+.stale {
+  opacity: 0.35;
 }
 
 code {
