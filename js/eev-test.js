@@ -72,7 +72,7 @@ EEVTest.handleMeasurementChanged = function(event) {
     const displayValue = EEVTest.meter.mainMeasure.displayValue;
     console.log("Display value: " + displayValue);
     console.log("Sub display value: " + EEVTest.meter.subMeasure.displayValue);
-    document.getElementById('measurement_mode').innerHTML = EEVTest.meter.meterState.mainMode;
+    document.getElementById('measurement_mode').innerHTML = EEVTest.meter.meterState.mainModeDisplay;
     document.getElementById('measurement_value').innerHTML = displayValue.split(" ")[0];
     document.getElementById('measurement_units').innerHTML = displayValue.split(" ")[1];
   }

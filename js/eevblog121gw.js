@@ -129,9 +129,11 @@
 	}
 
 	EEVBlog121GW.prototype.constructMeterState = function() {
-		const mainMode = getEnumByValue(MeterMode, this.parser.mainModeIndex());
+		const mainModeIndex = this.parser.mainModeIndex();
+		const mainMode = getEnumByValue(MeterMode, mainModeIndex);
 		console.log("Meter mode is: " + mainMode);
-		const subMode = getEnumByValue(MeterMode, this.parser.subModeIndex());
+		const subModeIndex = this.parser.subModeIndex();
+		const subMode = getEnumByValue(MeterMode, subModeIndex);
 		console.log("Sub mode is: " + subMode);
 		const barSignNegative = this.parser.barSignNegative();
 		const barSign = barSignNegative != null ?
@@ -145,7 +147,9 @@
 
 		return {
       mainMode: mainMode,
+			mainModeDisplay: EEVBlog121GW.descriptionForModeIndex(mainModeIndex),
       subMode: subMode,
+			subModeDisplay: EEVBlog121GW.descriptionForModeIndex(subModeIndex),
       barOff: this.parser.barOff(),
       bar0_150: this.parser.bar0_150(),
       barSign: barSign,
@@ -293,6 +297,13 @@
     return exp;
 	}
 
+	EEVBlog121GW.descriptionForModeIndex = function(modeIndex) {
+		if (modeIndex < RangeLookup.length) {
+			return RangeLookup[modeIndex].label;
+		}
+		return EEVBlog121GW.descriptionForExtendedModeIndex(modeIndex);
+	}
+
 	EEVBlog121GW.unitsForExtendedModeIndex = function(modeIndex) {
 		let units = "";
 		switch (modeIndex) {
@@ -315,13 +326,59 @@
 				units = "";
 				break;
 			case MeterMode._BURDEN_VOLTAGE:
-			 	units = "V";
+				units = "V";
 				break;
 			case MeterMode._dBm:
 				units = "dBm";
 				break;
 		}
 		return units;
+	}
+
+	EEVBlog121GW.descriptionForExtendedModeIndex = function(modeIndex) {
+		let desc = "";
+		switch (modeIndex) {
+			case MeterMode._TempC:
+				desc = "Temperature °C";
+				break;
+			case MeterMode._TempF:
+				desc = "Temperature °F";
+				break;
+			case MeterMode._Battery:
+				desc = "Battery";
+				break;
+			case MeterMode._APO_On:
+				desc = "APO On";
+				break;
+			case MeterMode._APO_Off:
+				desc = "APO Off";
+				break;
+			case MeterMode._YEAR:
+				desc = "Year";
+				break;
+			case MeterMode._DATE:
+				desc = "Date";
+				break;
+			case MeterMode._TIME:
+				desc = "Time";
+				break;
+			case MeterMode._LCD:
+				desc = "LCD";
+				break;
+			case MeterMode._Interval:
+		 		desc = "Interval";
+				break;
+			case MeterMode._BURDEN_VOLTAGE:
+			 	desc = "Burden Voltage";
+				break;
+			case MeterMode._dBm:
+				desc = "dBm";
+				break;
+			default:
+				desc = "?";
+				break;
+		}
+		return desc;
 	}
 
 	EEVBlog121GW.displayValueForMeasurement = function(measure) {
