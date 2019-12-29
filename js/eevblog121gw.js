@@ -387,10 +387,15 @@
 		}
 		// sig: 90, exp: -6, scaledExp: -3, scaledValue = 0.090
 		// sig 227, exp: -1, scaledExp: -1, scaledValue = 22.7
+		// sig 0, exp: -4, scaledExp: -4, scaledValue = 0.0000
+
 		const unscaledValue = measure.isNegative ? -1 * measure.significand : measure.significand;
 		const scaledExp = measure.exponent - EEVBlog121GW.rangeMultipleExp(measure.scale);
 		const numDigits = measure.significand.toString().length;
-		const precision = numDigits + (scaledExp < 0 ? 0 : scaledExp);
+		let precision = numDigits;
+		if (scaledExp > 0 || measure.significand === 0) {
+			precision += Math.abs(scaledExp);
+		}
 		const scaledValue = measure.significand * Math.pow(10, scaledExp);
 		const scaledUnits = (measure.scale || "") + measure.units;
 		return scaledValue.toPrecision(precision) + " " + scaledUnits;
