@@ -3,11 +3,14 @@ if (typeof(EEVTest) == 'undefined') {
 	var EEVTest = {};
 }
 
+const EEVBlog121GW = App.EEVBlog121GW;
+const EEVBlog121GWParser = App.EEVBlog121GWParser;
+
 EEVTest.bluetoothDevice = null;
 EEVTest.gattServer = null;
 EEVTest.measurementCharacteristic = null;
 
-EEVTest.meter = new App.EEVBlog121GW();
+EEVTest.meter = new EEVBlog121GW();
 
 EEVTest.connectMeterButtonClick = function() {
   EEVTest.requestDevice()
@@ -62,11 +65,17 @@ EEVTest.connectDeviceAndCacheCharacteristics = function() {
 EEVTest.handleMeasurementChanged = function(event) {
   let data = event.target.value;
   let parsingState = EEVTest.meter.processMessageData(data);
-  //let msmt = new EEVBlog121GW.Measurement(data);
-  //log('> Display value is ' + msmt.displayValue);
-  //document.getElementById('measurement_mode').innerHTML = msmt.meterMode.name;
-  //document.getElementById('measurement_value').innerHTML = msmt.displayValue.split(" ")[0];
-  //document.getElementById('measurement_units').innerHTML = msmt.displayValue.split(" ")[1];
+  if (parsingState === EEVBlog121GWParser.ParsingState.completed) {
+    console.log("Meter state: ", EEVTest.meter.meterState);
+    console.log("Main measure: ", EEVTest.meter.mainMeasure);
+    console.log("Sub measure: ", EEVTest.meter.subMeasure);
+    const displayValue = EEVTest.meter.mainMeasure.displayValue;
+    console.log("Display value: " + displayValue);
+    console.log("Sub display value: " + EEVTest.meter.subMeasure.displayValue);
+    document.getElementById('measurement_mode').innerHTML = EEVTest.meter.meterState.mainMode;
+    document.getElementById('measurement_value').innerHTML = displayValue.split(" ")[0];
+    document.getElementById('measurement_units').innerHTML = displayValue.split(" ")[1];
+  }
 }
 
 EEVTest.onDisconnected = function(event) {

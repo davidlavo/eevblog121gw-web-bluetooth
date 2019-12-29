@@ -103,10 +103,11 @@
 	];
 
 	EEVBlog121GW.prototype.processMessageData = function(msgData) {
-		let bytes = msgData.buffer;
+		const bytes = msgData.buffer;
     let remainder = new Uint8ClampedArray(bytes);
+		var parserState = this.parser.state;
 		while (remainder != null && remainder.length > 0) {
-			let parserState = this.parser.parse(remainder);
+			parserState = this.parser.parse(remainder);
 			if (parserState === EEVBlog121GWParser.ParsingState.error) {
 				console.log("Error parsing device response: " + this.parser.processed().toString(16) +
 					", length: " + this.parser.processed().length + ", offset: " + this.parser.offset);
@@ -114,28 +115,9 @@
 				this.parser.reset();
 			} else if (parserState === EEVBlog121GWParser.ParsingState.completed) {
 				console.log("Successfully parsed device response: " + this.parser.processed().toString(16));
-				let meterState = this.constructMeterState();
-				console.log("Meter state: ", meterState);
-				/*
-				responseParser.meterState?.let { meterState ->
-						manager?.broadcastUpdate(
-								MEASUREMENT_RECEIVED, meterState, BluetoothGatt.GATT_SUCCESS
-						)
-						listener?.onMeterStateReceived(meterState)
-				}
-				responseParser.measurement?.let { measure ->
-						manager?.broadcastUpdate(
-								MEASUREMENT_RECEIVED, measure, BluetoothGatt.GATT_SUCCESS
-						)
-						listener?.onMeasurementReceived(measure)
-				}
-				responseParser.subMeasurement?.let { subMeasure ->
-						manager?.broadcastUpdate(
-								SUBMEASUREMENT_RECEIVED, subMeasure, BluetoothGatt.GATT_SUCCESS
-						)
-						listener?.onSubMeasurementReceived(subMeasure)
-				}
-				*/
+				this.meterState = this.constructMeterState();
+				this.mainMeasure = this.constructMeasurement();
+				this.subMeasure = this.constructSubMeasurement();
 				remainder = this.parser.remainder();
 				this.parser.reset();
 			} else {
@@ -143,23 +125,23 @@
 				remainder = null;
 			}
 		}
-		return this.parser.state;
+		return parserState;
 	}
 
 	EEVBlog121GW.prototype.constructMeterState = function() {
-		let mainMode = getEnumByValue(MeterMode, this.parser.mainModeIndex());
+		const mainMode = getEnumByValue(MeterMode, this.parser.mainModeIndex());
 		console.log("Meter mode is: " + mainMode);
-		let subMode = getEnumByValue(MeterMode, this.parser.subModeIndex());
+		const subMode = getEnumByValue(MeterMode, this.parser.subModeIndex());
 		console.log("Sub mode is: " + subMode);
-		let barSignNegative = this.parser.barSignNegative();
-		let barSign = barSignNegative != null ?
+		const barSignNegative = this.parser.barSignNegative();
+		const barSign = barSignNegative != null ?
 			(barSignNegative ? Sign.negative : Sign.positive) : null;
 		console.log("Bar sign: " + barSign);
-		let bar1000_500 = getEnumByValue(BarRange, this.parser.bar1000_500());
+		const bar1000_500 = getEnumByValue(BarRange, this.parser.bar1000_500());
 		console.log("Bar1000_500: " + bar1000_500);
-		let acdc = getEnumByValue(AC_DC, this.parser.acdcValue());
+		const acdc = getEnumByValue(AC_DC, this.parser.acdcValue());
 		console.log("AC_DC: " + acdc);
-		let minMaxAve = getEnumByValue(MinMaxAve, this.parser.minMaxAveValue());
+		const minMaxAve = getEnumByValue(MinMaxAve, this.parser.minMaxAveValue());
 
 		return {
       mainMode: mainMode,
@@ -190,6 +172,172 @@
       serialNumber: this.parser.serialNumber
     };
   }
+
+	EEVBlog121GW.prototype.constructMeasurement = function() {
+		const timestamp = new Date();
+		const value = this.parser.mainValue;
+		const signNegative = this.parser.mainSignNegative() || false;
+		const modeIndex = this.parser.mainModeIndex();
+		const range = (modeIndex != null && modeIndex < RangeLookup.length) ?
+			RangeLookup[modeIndex] : null;
+		const overlimit = this.parser.mainOverlimit() || false;
+		const rangeValueIndex = this.parser.mainRangeValueIndex();
+		const rangeValue = EEVBlog121GW.rangeValue(range, rangeValueIndex);
+		const unitsPrefix = EEVBlog121GW.rangeUnitsPrefix(range, rangeValueIndex);
+		const rangeExp = EEVBlog121GW.rangeMultipleExp(unitsPrefix);
+		const exponent = rangeExp + rangeValue - 5;
+		const scale = (unitsPrefix || "").trim();
+		const units = scale.length > 0 ? EEVBlog121GW.rangeBaseUnits(range) :
+			EEVBlog121GW.rangeUnits(range);
+
+		let measurement = overlimit ?
+			{
+				nanValue: "OL",
+				units: units,
+				scale: scale,
+				timestamp: timestamp
+			} : {
+				significand: value,
+				exponent: exponent,
+				isNegative: signNegative,
+				units: units,
+				scale: scale,
+				timestamp: timestamp
+			};
+		measurement.displayValue = EEVBlog121GW.displayValueForMeasurement(measurement);
+		return measurement;
+	}
+
+	EEVBlog121GW.prototype.constructSubMeasurement = function() {
+		const timestamp = new Date();
+		const value = this.parser.subValue;
+		const signNegative = this.parser.subSignNegative() || false;
+		const modeIndex = this.parser.subModeIndex();
+		const mode = getEnumByValue(MeterMode, modeIndex);
+		const range = (modeIndex != null && modeIndex < RangeLookup.length) ?
+			RangeLookup[modeIndex] : null;
+		const overlimit = this.parser.subOverlimit() || false;
+		const units = EEVBlog121GW.rangeBaseUnits(range) || EEVBlog121GW.unitsForExtendedModeIndex(modeIndex);
+		const rangeValueIndex = this.parser.subPoint();
+		const unitsPrefix = EEVBlog121GW.rangeUnitsPrefix(range, rangeValueIndex);
+		const rangeExp = EEVBlog121GW.rangeMultipleExp(unitsPrefix);
+		const exponent = rangeExp - rangeValueIndex;
+		const scale = (unitsPrefix || "").trim();
+
+		let measurement = overlimit ?
+			{
+				nanValue: "OL",
+				units: units,
+				scale: scale,
+				timestamp: timestamp
+			} : {
+				significand: value,
+				exponent: exponent,
+				isNegative: signNegative,
+				units: units,
+				scale: scale,
+				timestamp: timestamp
+			};
+		measurement.displayValue = EEVBlog121GW.displayValueForMeasurement(measurement);
+		return measurement;
+	}
+
+	EEVBlog121GW.rangeValue = function(range, valueIndex) {
+		if (range != null && valueIndex != null && valueIndex < range.notation.length) {
+			return range.values[valueIndex];
+		}
+		return null;
+	}
+
+	EEVBlog121GW.rangeUnitsPrefix = function(range, valueIndex) {
+		if (range != null && valueIndex != null && valueIndex < range.notation.length) {
+			return range.notation[valueIndex];
+		}
+		return null;
+	}
+
+	EEVBlog121GW.rangeUnits = function(range) {
+		return range != null ? range.units : null;
+	}
+
+	EEVBlog121GW.rangeBaseUnits = function(range) {
+		return range != null ? range.baseUnits : null;
+	}
+
+	EEVBlog121GW.rangeMultipleExp = function(unitsPrefix) {
+		let exp = 0;
+		switch (unitsPrefix) {
+			case "p":
+				exp = -12;
+				break;
+      case "n":
+				exp = -9;
+				break;
+      case "u":
+			 	exp = -6;
+				break;
+      case "m":
+				exp = -3;
+				break;
+      case "K":
+			case "k":
+				exp = 3;
+				break;
+      case "M":
+			 	exp = 6;
+				break;
+      case "G":
+				exp = 9;
+				break;
+    }
+    return exp;
+	}
+
+	EEVBlog121GW.unitsForExtendedModeIndex = function(modeIndex) {
+		let units = "";
+		switch (modeIndex) {
+			case MeterMode._TempC:
+				units = "°C";
+				break;
+			case MeterMode._TempF:
+				units = "°F";
+				break;
+			case MeterMode._Battery:
+				units = "%";
+				break;
+			case MeterMode._APO_On:
+			case MeterMode._APO_Off:
+			case MeterMode._YEAR:
+			case MeterMode._DATE:
+			case MeterMode._TIME:
+			case MeterMode._LCD:
+			case MeterMode._Interval:
+				units = "";
+				break;
+			case MeterMode._BURDEN_VOLTAGE:
+			 	units = "V";
+				break;
+			case MeterMode._dBm:
+				units = "dBm";
+				break;
+		}
+		return units;
+	}
+
+	EEVBlog121GW.displayValueForMeasurement = function(measure) {
+		if (measure.nanValue != null) {
+			return measure.nanValue + " " + measure.units;
+		}
+		// sig: 90, exp: -6, scaledExp: -3, scaledValue = 0.090
+		// sig 227, exp: -1, scaledExp: -1, scaledValue = 22.7
+		const unscaledValue = measure.isNegative ? -1 * measure.significand : measure.significand;
+		const scaledExp = measure.exponent - EEVBlog121GW.rangeMultipleExp(measure.scale);
+		const numDigits = measure.significand.toString().length;
+		const precision = numDigits + (scaledExp < 0 ? 0 : scaledExp);
+		const scaledValue = measure.significand * Math.pow(10, scaledExp);
+		const scaledUnits = (measure.scale || "") + measure.units;
+		return scaledValue.toPrecision(precision) + " " + scaledUnits;
+	}
 
 	function getEnumByValue(e, v) {
 		if (typeof v == 'number') {

@@ -245,20 +245,44 @@
     return this.mainModeByte != null ? this.mainModeByte & 0x1F : null;
   }
 
+  EEVBlog121GWParser.prototype.mainOverlimit = function() {
+    return EEVBlog121GWParser.checkBits(this.mainRangeByte, 0x0080);
+  }
+
+  EEVBlog121GWParser.prototype.mainSignNegative = function() {
+    return EEVBlog121GWParser.checkBits(this.mainRangeByte, 0x40);
+  }
+
+  EEVBlog121GWParser.prototype.mainRangeValueIndex = function() {
+    return this.mainRangeByte != null ? this.mainRangeByte & 0x0F : null;
+  }
+
   EEVBlog121GWParser.prototype.subModeIndex = function() {
     return this.subModeByte != null ? this.subModeByte & 0x00FF : null;
   }
 
+  EEVBlog121GWParser.prototype.subOverlimit = function() {
+    return EEVBlog121GWParser.checkBits(this.subRangeByte, 0x0080);
+  }
+
+  EEVBlog121GWParser.prototype.subSignNegative = function() {
+    return EEVBlog121GWParser.checkBits(this.subRangeByte, 0x40);
+  }
+
+  EEVBlog121GWParser.prototype.subPoint = function() {
+    return this.subRangeByte != null ? this.subRangeByte & 0x07 : null;
+  }
+
   EEVBlog121GWParser.prototype.barOff = function() {
-    return this.barStatusByte != null ? (this.barStatusByte & 0x10) === 0x10 : null;
+    return EEVBlog121GWParser.checkBits(this.barStatusByte, 0x10);
   }
 
   EEVBlog121GWParser.prototype.bar0_150 = function() {
-    return this.barStatusByte != null ? (this.barStatusByte & 0x08) === 0x08 : null;
+    return EEVBlog121GWParser.checkBits(this.barStatusByte, 0x08);
   }
 
   EEVBlog121GWParser.prototype.barSignNegative = function() {
-    return this.barStatusByte != null ? (this.barStatusByte & 0x04) === 0x04 : null;
+    return EEVBlog121GWParser.checkBits(this.barStatusByte, 0x04);
   }
 
   EEVBlog121GWParser.prototype.bar1000_500 = function() {
@@ -270,15 +294,15 @@
   }
 
   EEVBlog121GWParser.prototype.statusC = function() {
-    return this.iconStatus1 != null ? (this.iconStatus1 & 0x80) === 0x80 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus1, 0x80);
   }
 
   EEVBlog121GWParser.prototype.status1KHz = function() {
-    return this.iconStatus1 != null ? (this.iconStatus1 & 0x40) === 0x40 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus1, 0x40);
   }
 
   EEVBlog121GWParser.prototype.status1ms = function() {
-    return this.iconStatus1 != null ? (this.iconStatus1 & 0x20) === 0x20 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus1, 0x20);
   }
 
   EEVBlog121GWParser.prototype.acdcValue = function() {
@@ -286,35 +310,35 @@
   }
 
   EEVBlog121GWParser.prototype.statusAuto = function() {
-    return this.iconStatus1 != null ? (this.iconStatus1 & 0x04) === 0x04 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus1, 0x04);
   }
 
   EEVBlog121GWParser.prototype.statusAPO = function() {
-    return this.iconStatus1 != null ? (this.iconStatus1 & 0x02) === 0x02 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus1, 0x02);
   }
 
   EEVBlog121GWParser.prototype.statusBat = function() {
-    return this.iconStatus1 != null ? (this.iconStatus1 & 0x01) === 0x01 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus1, 0x01);
   }
 
   EEVBlog121GWParser.prototype.statusF = function() {
-    return this.iconStatus2 != null ? (this.iconStatus2 & 0x80) === 0x80 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus2, 0x80);
   }
 
   EEVBlog121GWParser.prototype.statusBT = function() {
-    return this.iconStatus2 != null ? (this.iconStatus2 & 0x40) === 0x40 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus2, 0x40);
   }
 
   EEVBlog121GWParser.prototype.statusArrow = function() {
-    return this.iconStatus2 != null ? (this.iconStatus2 & 0x20) === 0x20 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus2, 0x20);
   }
 
   EEVBlog121GWParser.prototype.statusREL = function() {
-    return this.iconStatus2 != null ? (this.iconStatus2 & 0x10) === 0x10 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus2, 0x10);
   }
 
   EEVBlog121GWParser.prototype.statusDBm = function() {
-    return this.iconStatus2 != null ? (this.iconStatus2 & 0x08) === 0x08 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus2, 0x08);
   }
 
   EEVBlog121GWParser.prototype.minMaxAveValue = function() {
@@ -322,7 +346,7 @@
   }
 
   EEVBlog121GWParser.prototype.statusTest = function() {
-    return this.iconStatus3 != null ? (this.iconStatus3 & 0x40) === 0x40 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus3, 0x40);
   }
 
   EEVBlog121GWParser.prototype.statusMem = function() {
@@ -334,11 +358,11 @@
   }
 
   EEVBlog121GWParser.prototype.statusAC = function() {
-    return this.iconStatus3 != null ? (this.iconStatus3 & 0x02) === 0x02 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus3, 0x02);
   }
 
   EEVBlog121GWParser.prototype.statusDC = function() {
-    return this.iconStatus3 != null ? (this.iconStatus3 & 0x01) === 0x01 : null;
+    return EEVBlog121GWParser.checkBits(this.iconStatus3, 0x01);
   }
 
   EEVBlog121GWParser.parseResponsePrefix = function(input) {
@@ -473,6 +497,10 @@
       bytesProcessed: bytesProcessed,
       checksum: checksum
     };
+  }
+
+  EEVBlog121GWParser.checkBits = function(val, mask) {
+    return val != null ? (val & mask) === mask : null;
   }
 
   EEVBlog121GWParser.buildUInt16 = function(lo, hi) {
