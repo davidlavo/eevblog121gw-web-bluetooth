@@ -19,7 +19,7 @@ ChromeSamples.clearLog = function() {
   document.querySelector('#log').textContent = '';
 }
 
-ChromeSamples.etStatus = function(status) {
+ChromeSamples.setStatus = function(status) {
   document.querySelector('#status').textContent = status;
 }
 
