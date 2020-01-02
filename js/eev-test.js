@@ -98,8 +98,6 @@ EEVTest.onDisconnected = function(event) {
   let device = event.target;
   log('Device ' + device.name + ' is disconnected.');
   EEVTest.updateUIForConnectionState(ConnectionState.disconnected);
-  EEVTest.setStateElementsStale(true);
-  EEVTest.setValueElementsStale(true);
 }
 
 EEVTest.onStartNotificationsButtonClick = function() {
@@ -133,17 +131,32 @@ EEVTest.onResetButtonClick = function() {
     return;
   }
   log('Disconnecting from Bluetooth Device...');
-  EEVTest.updateUIForConnectionState(ConnectionState.disconnecting);
   if (EEVTest.bluetoothDevice.gatt.connected) {
+    EEVTest.updateUIForConnectionState(ConnectionState.disconnecting);
     EEVTest.bluetoothDevice.gatt.disconnect();
   } else {
+    EEVTest.updateUIForConnectionState(ConnectionState.disconnected);
     log('> Bluetooth Device is already disconnected');
   }
   EEVTest.bluetoothDevice = null;
 }
 
+EEVTest.initializeUI = function() {
+  document.getElementById('connection_state').innerHTML = ConnectionState.disconnected;
+  EEVTest.setStateElementsStale(true);
+  EEVTest.setValueElementsStale(true);
+  document.getElementById('measurement_mode').innerHTML = "Mode";
+  document.getElementById('measurement_value').innerHTML = "0";
+  document.getElementById('measurement_units').innerHTML = "Units";
+
+}
+
 EEVTest.updateUIForConnectionState = function(connectionState) {
   document.getElementById('connection_state').innerHTML = connectionState;
+  if (connectionState == ConnectionState.disconnected) {
+    EEVTest.setStateElementsStale(true);
+    EEVTest.setValueElementsStale(true);
+  }
 }
 
 EEVTest.getAllStateElements = function() {

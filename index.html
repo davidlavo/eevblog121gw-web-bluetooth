@@ -70,9 +70,9 @@ limitations under the License.
       <div id="measurement_container">
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr><td><p id="connection_state">Not Connected</p></td></tr>
-          <tr><td><p id="measurement_mode" data-element-type="display_state">Voltage-DC</p></td></tr>
+          <tr><td><p id="measurement_mode" data-element-type="display_state">Mode</p></td></tr>
           <tr><td><p id="measurement_value" data-element-type="display_value">0</p></td></tr>
-          <tr><td><p id="measurement_units" data-element-type="display_value">V</p></td></tr>
+          <tr><td><p id="measurement_units" data-element-type="display_value">Units</p></td></tr>
         </table>
       </div>
 
@@ -140,12 +140,7 @@ limitations under the License.
             ChromeSamples.setStatus('Warning! Keep in mind this sample has been tested with Chrome ' + 48 + '.');
           }
         }
-        ///IDVMPanel.initialize();
-        //Powerleap.initialize();
-        ///graph_initialize();
-        ///addValueToGraph("cvs", 0.0);
-        ///document.getElementById('screen').style.display = 'none';
-        ///document.getElementById('idvm_control_panel').style.display = 'none';
+        EEVTest.initializeUI();
         document.getElementById('debug_output').style.visibility = ChromeSamples.loggingOn ? 'visible' : 'hidden';
       }
       </script>
