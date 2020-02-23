@@ -75,34 +75,35 @@
 	};
 
   const RangeLookup = [
-		{ baseUnits: "V", units: "V", label: "Voltage Low Z", values: [4], notation: " " },    //0
-		{ baseUnits: "V", units: "V", label: "Voltage DC", values: [1,2,3,4], notation: "    " },    //1
-		{ baseUnits: "V", units: "V", label: "Voltage AC", values: [1,2,3,4], notation: "    " },     //2
-		{ baseUnits: "V", units: "mV", label: "Voltage DC", values: [2,3], notation: "mm" },     //3
-		{ baseUnits: "V", units: "mV", label: "Voltage AC", values: [2,3], notation: "mm" },     //4
-		{ baseUnits: "°C", units: "°C", label: "Temp", values: [4], notation: " " },     //5
-		{ baseUnits: "Hz", units: "KHz", label: "Frequency", values: [2,3,1,2,3], notation: "  kkk" },   //6
-		{ baseUnits: "s", units: "ms", label: "Period", values: [1,2,3], notation:"   " },     //7
-		{ baseUnits: "%", units: "%", label: "Duty", values: [4], notation: " " },     //8
-		{ baseUnits: "Ω", units: "KΩ", label: "Resistance", values: [2,3,1,2,3,1,2], notation: "  kkkMM" }, //9
-		{ baseUnits: "Ω", units: "KΩ", label: "Continuity", values: [3], notation: " " },     //10
-		{ baseUnits: "V", units: "V", label: "Diode", values: [1,2], notation: "  " },     //11
-		{ baseUnits: "F", units: "mF" /*"ms"*/, label: "Capacitance", values: [3,4,2,3,4,5], notation: "nnuuuu" },  //12
-		{ baseUnits: "VA", units: "uVA", label: "Power AC", values: [4,5,2,3], notation: "    " },     //13
-		{ baseUnits: "VA", units: "mVA", label: "Power AC", values: [4,5,2,3], notation: "mm  " },     //14
-		{ baseUnits: "VA", units: "VA", label: "Power AC", values: [4,5,2,3], notation: "mm  " },     //15, units in orig code "mVA"
-		{ baseUnits: "A", units: "uA", label: "Current AC", values: [2,3], notation: "  " },     //16
-		{ baseUnits: "A", units: "uA", label: "Current DC", values: [2,3], notation: "  " },     //17
-		{ baseUnits: "A", units: "mA", label: "Current AC", values: [3,1,2], notation: "mmm" },     //18
-		{ baseUnits: "A", units: "mA", label: "Current DC", values: [1,2], notation: "mm" },     //19
-		{ baseUnits: "A", units: "A", label: "Current AC", values: [3,1,2], notation: "m  " },     //20
-		{ baseUnits: "A", units: "A", label: "Current DC", values: [3,1,2], notation: "m  " },     //21
-		{ baseUnits: "VA", units: "uVA", label: "Power DC", values: [3,4,4,5], notation: "    " },     //22
-		{ baseUnits: "VA", units: "mVA", label: "Power DC", values: [4,5,2,3], notation: "mm  " },     //23
-		{ baseUnits: "VA", units: "VA", label: "Power DC", values: [4,5,2,3], notation: "mm  " }    //24
+		{ units: "V", label: "Voltage Low Z", values: [4], notation: " " },           // 0
+		{ units: "V", label: "Voltage DC", values: [1,2,3,4], notation: "    " },     // 1
+		{ units: "V", label: "Voltage AC", values: [1,2,3,4], notation: "    " },     // 2
+		{ units: "V", label: "Voltage DC", values: [2,3], notation: "mm" },           // 3 eev units: "mV"
+		{ units: "V", label: "Voltage AC", values: [2,3], notation: "mm" },           // 4 eev units: "mV"
+		{ units: "°C", label: "Temp", values: [4], notation: " " },                   // 5
+		{ units: "Hz", label: "Frequency", values: [2,3,1,2,3], notation: "  kkk" },  // 6 eev units: "KHz"
+		{ units: "s", label: "Period", values: [1,2,3], notation: "mmm" },            // 7 eev units: "ms", notation: "   "
+		{ units: "%", label: "Duty", values: [4], notation: " " },                    // 8
+		{ units: "Ω", label: "Resistance", values: [2,3,1,2,3,1,2], notation: "  kkkMM" }, // 9 eev units: "KΩ"
+		{ units: "Ω", label: "Continuity", values: [3], notation: " " },              // 10 eev units: "KΩ"
+		{ units: "V", label: "Diode", values: [1,2], notation: "  " },                // 11
+		{ units: "F", label: "Capacitance", values: [2,3,1,2,3,5], notation: "nnuuuu" },  // 12 eev units: "ms", values: [3,4,2,3,4,5]
+		{ units: "VA", label: "Power AC", values: [3,4,4,5], notation: "uuuu" },      // 13 eev units: "uVA", values: [4,5,2,3], notation: "    "
+		{ units: "VA", label: "Power AC", values: [2,3,3,4], notation: "mmmm" },      // 14 eev units: "mVA", values: [4,5,2,3], notation: "mm  "
+		{ units: "VA", label: "Power AC", values: [4,5,2,3], notation: "mm  " },      // 15 eev units: "mVA"
+		{ units: "A", label: "Current AC", values: [2,3], notation: "uu" },           // 16 eev units: "uA", notation: "  "
+		{ units: "A", label: "Current DC", values: [2,3], notation: "uu" },           // 17 eev units: "uA", notation: "  "
+		{ units: "A", label: "Current AC", values: [1,2,2], notation: "mmm" },        // 18 eev units: "mA", values: [3,1,2]
+		{ units: "mA", label: "Current DC", values: [1,2], notation: "mm" },          // 19 eev units: "mA"
+		{ units: "A", label: "Current AC", values: [3,1,2], notation: "m  " },        // 20
+		{ units: "A", label: "Current DC", values: [3,1,2], notation: "m  " },        // 21
+		{ units: "VA", label: "Power DC", values: [3,4,4,5], notation: "uuuu" },      // 22 eev units: "uVA", notation: "    "
+		{ units: "VA", label: "Power DC", values: [2,3,3,4], notation: "mmmm" },      // 23 eev units: "mVA", values: [4,5,2,3], notation: "mm  "
+		{ units: "VA", label: "Power DC", values: [4,5,2,3], notation: "mm  " }       // 24
 	];
 
 	EEVBlog121GW.prototype.processMessageData = function(msgData) {
+    const timestamp = new Date();
 		const bytes = msgData.buffer;
     let remainder = new Uint8ClampedArray(bytes);
 		var parserState = this.parser.state;
@@ -116,8 +117,8 @@
 			} else if (parserState === EEVBlog121GWParser.ParsingState.completed) {
 				console.log("Successfully parsed device response: " + this.parser.processed().toString(16));
 				this.meterState = this.constructMeterState();
-				this.mainMeasure = this.constructMeasurement();
-				this.subMeasure = this.constructSubMeasurement();
+				this.mainMeasure = this.constructMeasurement(timestamp);
+				this.subMeasure = this.constructSubMeasurement(timestamp);
 				remainder = this.parser.remainder();
 				this.parser.reset();
 			} else {
@@ -177,8 +178,7 @@
     };
   }
 
-	EEVBlog121GW.prototype.constructMeasurement = function() {
-		const timestamp = new Date();
+	EEVBlog121GW.prototype.constructMeasurement = function(timestamp) {
 		const value = this.parser.mainValue;
 		const signNegative = this.parser.mainSignNegative() || false;
 		const modeIndex = this.parser.mainModeIndex();
@@ -191,8 +191,7 @@
 		const rangeExp = EEVBlog121GW.rangeMultipleExp(unitsPrefix);
 		const exponent = rangeExp + rangeValue - 5;
 		const scale = (unitsPrefix || "").trim();
-		const units = scale.length > 0 ? EEVBlog121GW.rangeBaseUnits(range) :
-			EEVBlog121GW.rangeUnits(range);
+		const units = EEVBlog121GW.rangeUnits(range);
 
 		let measurement = overlimit ?
 			{
@@ -212,8 +211,7 @@
 		return measurement;
 	}
 
-	EEVBlog121GW.prototype.constructSubMeasurement = function() {
-		const timestamp = new Date();
+	EEVBlog121GW.prototype.constructSubMeasurement = function(timestamp) {
 		const value = this.parser.subValue;
 		const signNegative = this.parser.subSignNegative() || false;
 		const modeIndex = this.parser.subModeIndex();
@@ -221,7 +219,7 @@
 		const range = (modeIndex != null && modeIndex < RangeLookup.length) ?
 			RangeLookup[modeIndex] : null;
 		const overlimit = this.parser.subOverlimit() || false;
-		const units = EEVBlog121GW.rangeBaseUnits(range) || EEVBlog121GW.unitsForExtendedModeIndex(modeIndex);
+		const units = EEVBlog121GW.rangeUnits(range) || EEVBlog121GW.unitsForExtendedModeIndex(modeIndex);
 		const rangeValueIndex = this.parser.subPoint();
 		const unitsPrefix = EEVBlog121GW.rangeUnitsPrefix(range, rangeValueIndex);
 		const rangeExp = EEVBlog121GW.rangeMultipleExp(unitsPrefix);
@@ -262,10 +260,6 @@
 
 	EEVBlog121GW.rangeUnits = function(range) {
 		return range != null ? range.units : null;
-	}
-
-	EEVBlog121GW.rangeBaseUnits = function(range) {
-		return range != null ? range.baseUnits : null;
 	}
 
 	EEVBlog121GW.rangeMultipleExp = function(unitsPrefix) {
